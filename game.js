@@ -20,7 +20,7 @@ const C = {
     O_WMIN:   20,
     O_WMAX:   50,
     O_HMIN:   30,
-    O_HMAX:   70,
+    O_HMAX:   60,
     FONT_SM:  "20px 'Courier New',monospace",
     FONT_LG:  "40px 'Courier New',monospace"
 };
