@@ -193,6 +193,7 @@ class InputHandler {
     }
 
     triggerAction() {
+        // Logic to decide if we jump or restart is delegated via callbacks
         if (this.actionCallback) this.actionCallback();
     }
 }
