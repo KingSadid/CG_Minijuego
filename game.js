@@ -25,7 +25,6 @@ const C = {
     FONT_LG:  "40px 'Courier New',monospace"
 };
 
-// Precálculo: radio² para colisiones
 const P_RAD_SQ = C.P_RAD * C.P_RAD;
 
 // ── Jugador ──
@@ -49,7 +48,6 @@ class Player {
             this.dy += C.GRAV;
             this.y += this.dy;
         }
-        // Colisión con suelo
         if (this.y + C.P_RAD >= C.BASE_Y) {
             this.y = C.BASE_Y - C.P_RAD;
             this.dy = 0;
@@ -58,13 +56,11 @@ class Player {
     }
 
     draw(ctx) {
-        // Bola principal
         ctx.fillStyle = C.P_COLOR;
         ctx.beginPath();
         ctx.arc(this.x, this.y, C.P_RAD, 0, TAU);
         ctx.fill();
 
-        // Brillo (efecto 3D)
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.beginPath();
         ctx.arc(this.x - 3, this.y - 3, C.P_RAD / 3, 0, TAU);
@@ -93,11 +89,9 @@ class Obstacle {
 
 // ── Juego Principal ──
 class Game {
-    constructor(id) {
-        const cvs = document.getElementById(id);
-        this.ctx = cvs.getContext('2d');
+    constructor(cvs) {
+        this.ctx = cvs.getContext('2d', { alpha: false });
 
-        // Cacheo de dimensiones (evita acceso repetido al DOM)
         this.W = cvs.width;
         this.H = cvs.height;
 
@@ -130,25 +124,19 @@ class Game {
         cvs.addEventListener('mousedown', act);
     }
 
-    /**
-     * Colisión Círculo vs Rectángulo
-     * comparamos distancia² contra radio²
-     */
     collides(px, py, obs) {
-        // Clamp del centro del círculo al rectángulo
         let dx = px, dy = py;
         const ox = obs.x, oy = obs.y, ow = obs.w, oh = obs.h;
 
-        if (px < ox)          dx = ox;
+        if (px < ox)           dx = ox;
         else if (px > ox + ow) dx = ox + ow;
 
-        if (py < oy)          dy = oy;
+        if (py < oy)           dy = oy;
         else if (py > oy + oh) dy = oy + oh;
 
         dx -= px;
         dy -= py;
 
-        // distancia² <= radio² 
         return dx * dx + dy * dy <= P_RAD_SQ;
     }
 
@@ -157,7 +145,6 @@ class Game {
 
         this.player.update();
 
-        // Spawn de obstáculos
         if (--this.spawnTimer <= 0) {
             this.obstacles.push(new Obstacle(this.W));
             this.spawnTimer = rand(C.SP_MIN, C.SP_MAX);
@@ -168,7 +155,6 @@ class Game {
         const px = this.player.x;
         const py = this.player.y;
 
-        // Actualizar y limpiar obstáculos (recorrido inverso para splice seguro)
         for (let i = obs.length - 1; i >= 0; i--) {
             obs[i].update(spd);
             if (obs[i].x + obs[i].w < 0) {
@@ -188,29 +174,24 @@ class Game {
         const W = this.W;
         const H = this.H;
 
-        // Fondo
         ctx.fillStyle = C.BG;
         ctx.fillRect(0, 0, W, H);
 
-        // Suelo
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(0, C.BASE_Y);
         ctx.lineTo(W, C.BASE_Y);
         ctx.stroke();
 
-        // Entidades
         this.player.draw(ctx);
         const obs = this.obstacles;
         for (let i = 0, len = obs.length; i < len; i++) obs[i].draw(ctx);
 
-        // Score
         ctx.fillStyle = '#fff';
         ctx.font = C.FONT_SM;
         ctx.textAlign = 'right';
         ctx.fillText('SCORE: ' + (this.score / 10 | 0), W - 20, 30);
 
-        // Game Over overlay
         if (this.gameOver) {
             ctx.fillStyle = 'rgba(0,0,0,0.7)';
             ctx.fillRect(0, 0, W, H);
@@ -234,7 +215,7 @@ class Game {
 
     restart() {
         this.player = new Player();
-        this.obstacles.length = 0;   // Vaciar sin crear nuevo array
+        this.obstacles.length = 0;
         this.score = 0;
         this.speed = C.SPD;
         this.gameOver = false;
@@ -242,5 +223,4 @@ class Game {
     }
 }
 
-// ── Inicialización ──
-window.onload = () => new Game('gameCanvas');
+new Game(document.getElementById('gameCanvas'));
