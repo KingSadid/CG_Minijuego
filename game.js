@@ -167,9 +167,8 @@ class Renderer {
  * RESPONSIBILITY: Capturing and normalizing user input.
  */
 class InputHandler {
-    constructor(actionCallback, resetCallback) {
+    constructor(actionCallback) {
         this.actionCallback = actionCallback;
-        this.resetCallback = resetCallback;
         this.bindEvents();
     }
 
@@ -193,7 +192,6 @@ class InputHandler {
     }
 
     triggerAction() {
-        // Logic to decide if we jump or restart is delegated via callbacks
         if (this.actionCallback) this.actionCallback();
     }
 }
@@ -217,8 +215,7 @@ class GameEngine {
 
         // Bind logic to input
         this.inputHandler = new InputHandler(
-            () => this.handleInput(), 
-            () => this.restart()
+            () => this.handleInput()
         );
 
         this.lastTime = 0;
@@ -236,7 +233,6 @@ class GameEngine {
 
     checkCollision(player, obstacle) {
         // AABB (Axis-Aligned Bounding Box) vs Circle collision approximation
-        // Clamping the circle center to the rectangle bounds
         let testX = player.x;
         let testY = player.y;
 
