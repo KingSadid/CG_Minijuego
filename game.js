@@ -127,7 +127,7 @@ class Renderer {
         this.ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Cosmetic shine
+        // shine
         this.ctx.fillStyle = 'rgba(255,255,255,0.3)';
         this.ctx.beginPath();
         this.ctx.arc(player.x - 3, player.y - 3, player.radius / 3, 0, Math.PI * 2);
