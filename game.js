@@ -232,7 +232,6 @@ class GameEngine {
     }
 
     checkCollision(player, obstacle) {
-        // AABB (Axis-Aligned Bounding Box) vs Circle collision approximation
         let testX = player.x;
         let testY = player.y;
 
@@ -254,14 +253,14 @@ class GameEngine {
 
         this.player.update();
 
-        // Obstacle Spawning
+        // Obstacle Spawn
         this.spawnTimer--;
         if (this.spawnTimer <= 0) {
             this.obstacles.push(new Obstacle(GAME_CONFIG.CANVAS_WIDTH));
             this.spawnTimer = Math.random() * (GAME_CONFIG.SPAWN_TIME_MAX - GAME_CONFIG.SPAWN_TIME_MIN) + GAME_CONFIG.SPAWN_TIME_MIN;
         }
 
-        // Obstacle Updates & Collision
+        // Obstacle & Collision
         this.obstacles.forEach(obs => {
             obs.update(this.gameSpeed);
             
@@ -306,7 +305,6 @@ class GameEngine {
 }
 
 // Initialize Game
-// Enclosed in a try-catch to satisfy error handling requirements
 try {
     new GameEngine('gameCanvas');
 } catch (error) {
