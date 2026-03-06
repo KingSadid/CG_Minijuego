@@ -92,14 +92,3 @@ canvas {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
 }
-
-.instructions {
-    position: absolute;
-    top: -30px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    color: #888;
-    font-size: 14px;
-    letter-spacing: 1px;
-}
