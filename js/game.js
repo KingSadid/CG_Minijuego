@@ -125,12 +125,19 @@ class GameEngine {
         this.parallax = new ParallaxBackground(this.width, this.height);
 
         this.uiScore = document.getElementById('score-value');
+        this.uiHighScore = document.getElementById('high-score-value');
         this.uiGameOver = document.getElementById('game-over-screen');
 
         this.score = 0;
+        this.highScore = Number(localStorage.getItem('cyberRunnerHighScore')) || 0;
         this.gameSpeed = CONFIG.INITIAL_SPEED;
         this.spawnTimer = 0;
         this.isGameOver = false;
+
+
+        if (this.uiHighScore) {
+            this.uiHighScore.innerText = this.highScore.toString().padStart(5, '0');
+        }
 
         this.bindEvents();
 
@@ -206,13 +213,24 @@ class GameEngine {
         this.gameSpeed += CONFIG.SPEED_INCREMENT;
         this.score++;
 
+        const currentDisplayScore = Math.floor(this.score / 10);
         if (this.score % 10 === 0 && this.uiScore) {
-            this.uiScore.innerText = Math.floor(this.score / 10).toString().padStart(5, '0');
+            this.uiScore.innerText = currentDisplayScore.toString().padStart(5, '0');
         }
     }
 
     triggerGameOver() {
         this.isGameOver = true;
+
+        const currentDisplayScore = Math.floor(this.score / 10);
+        if (currentDisplayScore > this.highScore) {
+            this.highScore = currentDisplayScore;
+            localStorage.setItem('cyberRunnerHighScore', this.highScore);
+            if (this.uiHighScore) {
+                this.uiHighScore.innerText = this.highScore.toString().padStart(5, '0');
+            }
+        }
+
         this.particleSystem.emitExplosion(this.player.x, this.player.y, CONFIG.COLORS.PLAYER, 30);
         if (this.uiGameOver) {
             this.uiGameOver.classList.add('visible');
