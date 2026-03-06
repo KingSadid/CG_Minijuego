@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Runner</title>
+    <title>Cyber Runner</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="game-container">
+        <div class="instructions">Click, Tap, or press Space/Up to JUMP</div>
+        <canvas id="game-canvas" width="800" height="400"></canvas>
+        <div id="ui-layer">
+            <div id="score-display">SCORE: <span id="score-value">00000</span></div>
+            <div id="game-over-screen">
+                <h1>SYSTEM FAILURE</h1>
+                <p>Press SPACE or TAP to reboot</p>
+            </div>
+        </div>
+    </div>
     
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <script src="game.js"></script>
+    <script src="js/art/parallax.js"></script>
+    <script src="js/art/particles.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>
