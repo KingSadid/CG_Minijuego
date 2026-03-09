@@ -16,7 +16,7 @@ const PARALLAX_CONFIG = {
 };
 
 /**
- * Procedural infinite background renderer.
+ * Renderizador de fondo infinito.
  */
 class ParallaxBackground {
     constructor(width, height) {
