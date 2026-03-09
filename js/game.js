@@ -103,7 +103,7 @@ class Physics {
         const distY = circleEntity.y - testY;
         const distance = Math.sqrt((distX * distX) + (distY * distY));
 
-        return distance <= circleEntity.radius - 2; // -2 para un ligero margen de gracia
+        return distance <= circleEntity.radius - 2; 
     }
 }
 
