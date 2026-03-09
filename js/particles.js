@@ -11,7 +11,7 @@ const PARTICLE_CONFIG = {
 };
 
 /**
- * Visual effect particle.
+ * Partículas de efecto visual.
  */
 class Particle {
     constructor(x, y, color, velocityX, velocityY, lifeTime) {
@@ -45,7 +45,7 @@ class Particle {
 }
 
 /**
- * Manages collections of particles for visual feedback.
+ * Gestiona colecciones de partículas para retroalimentación visual.
  */
 class ParticleSystem {
     constructor() {
