@@ -108,7 +108,7 @@ class Physics {
 }
 
 /**
- * Player Entity handling user character physics.
+ * Entidad del jugador que maneja la física del personaje.
  */
 class Player {
     constructor() {
@@ -159,7 +159,7 @@ class Player {
 }
 
 /**
- * Obstacle Entity moving against the player.
+ * Entidad de obstáculos moviéndose contra el jugador.
  */
 class Obstacle {
     constructor(startX, minWidth, maxWidth, minHeight, maxHeight) {
