@@ -1,15 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
+/* Clean Code: Centralizamos los colores temáticos en variables */
+:root {
+    --bg-color: #050510;
+    --neon-blue: #00f3ff;
+    --neon-pink: #ff007f;
+    --danger-red: #ff003c;
+    --text-color: #fff;
+    --canvas-bg: #000;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #050510;
+    background-color: var(--bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     font-family: 'Orbitron', sans-serif;
-    color: #fff;
+    color: var(--text-color);
     overflow: hidden;
 }
 
@@ -19,12 +29,12 @@ body {
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.4), 
                 0 0 60px rgba(255, 0, 127, 0.2);
     padding: 4px;
-    background: linear-gradient(45deg, #00f3ff, #ff007f);
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
 }
 
 canvas {
     display: block;
-    background-color: #000;
+    background-color: var(--canvas-bg);
     border-radius: 6px;
 }
 
@@ -45,7 +55,7 @@ canvas {
     padding: 20px;
     font-size: 24px;
     text-align: right;
-    text-shadow: 0 0 10px #00f3ff;
+    text-shadow: 0 0 10px var(--neon-blue);
     letter-spacing: 2px;
 }
 
@@ -75,16 +85,16 @@ canvas {
 #game-over-screen h1 {
     font-size: 48px;
     margin: 0 0 20px 0;
-    color: #ff003c;
-    text-shadow: 0 0 20px #ff003c;
+    color: var(--danger-red);
+    text-shadow: 0 0 20px var(--danger-red);
     text-transform: uppercase;
     letter-spacing: 4px;
 }
 
 #game-over-screen p {
     font-size: 18px;
-    color: #00f3ff;
-    text-shadow: 0 0 10px #00f3ff;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
     animation: blink 1.5s infinite;
 }
 
