@@ -1,5 +1,5 @@
 /**
- * Clean Code: Configuraciones de partículas centralizadas
+ * Configuraciones de partículas centralizadas
  */
 const PARTICLE_CONFIG = {
     EXPLOSION_LIFETIME: 40,
