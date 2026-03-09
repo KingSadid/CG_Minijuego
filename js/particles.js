@@ -1,4 +1,16 @@
 /**
+ * Clean Code: Configuraciones de partículas centralizadas
+ */
+const PARTICLE_CONFIG = {
+    EXPLOSION_LIFETIME: 40,
+    TRAIL_LIFETIME: 20,
+    BASE_SIZE: 2,
+    SIZE_VARIANCE: 3,
+    EXPLOSION_MIN_SPEED: 2,
+    EXPLOSION_SPEED_VARIANCE: 5
+};
+
+/**
  * Visual effect particle.
  */
 class Particle {
@@ -11,7 +23,7 @@ class Particle {
         this.lifeTime = lifeTime;
         this.maxLife = lifeTime;
         this.alpha = 1;
-        this.size = Math.random() * 3 + 2;
+        this.size = Math.random() * PARTICLE_CONFIG.SIZE_VARIANCE + PARTICLE_CONFIG.BASE_SIZE;
     }
 
     update() {
@@ -43,17 +55,17 @@ class ParticleSystem {
     emitExplosion(x, y, color, count) {
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 5 + 2;
+            const speed = Math.random() * PARTICLE_CONFIG.EXPLOSION_SPEED_VARIANCE + PARTICLE_CONFIG.EXPLOSION_MIN_SPEED;
             const vx = Math.cos(angle) * speed;
             const vy = Math.sin(angle) * speed;
-            this.particles.push(new Particle(x, y, color, vx, vy, 40));
+            this.particles.push(new Particle(x, y, color, vx, vy, PARTICLE_CONFIG.EXPLOSION_LIFETIME));
         }
     }
 
     emitTrail(x, y, color) {
         const vx = (Math.random() - 0.5) * 2;
         const vy = Math.random() * 2;
-        this.particles.push(new Particle(x, y, color, vx, vy, 20));
+        this.particles.push(new Particle(x, y, color, vx, vy, PARTICLE_CONFIG.TRAIL_LIFETIME));
     }
 
     update() {

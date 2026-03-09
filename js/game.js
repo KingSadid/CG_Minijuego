@@ -1,5 +1,5 @@
 /**
- * Game Configuration Constants
+ * Constantes de configuración del juego
  */
 const CONFIG = {
     CANVAS_WIDTH: 800,
