@@ -18,6 +18,96 @@ const CONFIG = {
 };
 
 /**
+ * SRP: Gestión de almacenamiento local (Storage)
+ */
+class StorageManager {
+    static getHighScore(key = 'cyberRunnerHighScore') {
+        return Number(localStorage.getItem(key)) || 0;
+    }
+
+    static saveHighScore(key = 'cyberRunnerHighScore', score) {
+        localStorage.setItem(key, score);
+    }
+}
+
+/**
+ * SRP: Manejo de la Interfaz de Usuario (DOM)
+ */
+class UIManager {
+    constructor(uiElements) {
+        this.scoreElement = uiElements.score;
+        this.highScoreElement = uiElements.highScore;
+        this.gameOverScreen = uiElements.gameOver;
+    }
+
+    updateScore(score) {
+        if (this.scoreElement) {
+            this.scoreElement.innerText = Math.floor(score / 10).toString().padStart(5, '0');
+        }
+    }
+
+    updateHighScore(highScore) {
+        if (this.highScoreElement) {
+            this.highScoreElement.innerText = highScore.toString().padStart(5, '0');
+        }
+    }
+
+    showGameOver() {
+        if (this.gameOverScreen) this.gameOverScreen.classList.add('visible');
+    }
+
+    hideGameOver() {
+        if (this.gameOverScreen) this.gameOverScreen.classList.remove('visible');
+    }
+}
+
+/**
+ * SRP: Manejo de entradas del usuario (Teclado, Touch, Mouse)
+ */
+class InputHandler {
+    constructor(onActionCallback) {
+        this.onAction = onActionCallback;
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        const handleAction = (event) => {
+            if (event.type === 'keydown' && (event.code !== 'Space' && event.code !== 'ArrowUp')) {
+                return;
+            }
+            event.preventDefault();
+            this.onAction();
+        };
+
+        window.addEventListener('keydown', handleAction);
+        window.addEventListener('touchstart', handleAction, { passive: false });
+        window.addEventListener('mousedown', handleAction);
+    }
+}
+
+/**
+ * SRP: Utilidad de físicas y colisiones (Matemáticas puras)
+ */
+class Physics {
+    static checkCollision(circleEntity, rectEntity) {
+        let testX = circleEntity.x;
+        let testY = circleEntity.y;
+
+        if (circleEntity.x < rectEntity.x) testX = rectEntity.x;
+        else if (circleEntity.x > rectEntity.x + rectEntity.width) testX = rectEntity.x + rectEntity.width;
+
+        if (circleEntity.y < rectEntity.y) testY = rectEntity.y;
+        else if (circleEntity.y > rectEntity.y + rectEntity.height) testY = rectEntity.y + rectEntity.height;
+
+        const distX = circleEntity.x - testX;
+        const distY = circleEntity.y - testY;
+        const distance = Math.sqrt((distX * distX) + (distY * distY));
+
+        return distance <= circleEntity.radius - 2; // -2 para un ligero margen de gracia
+    }
+}
+
+/**
  * Player Entity handling user character physics.
  */
 class Player {
@@ -108,10 +198,10 @@ class Obstacle {
 }
 
 /**
- * Core Engine logic coordinating all systems.
+ * Core Engine logic: Actúa como Orquestador (Inversión de Dependencias)
  */
 class GameEngine {
-    constructor(canvasId) {
+    constructor(canvasId, uiManager) {
         const canvas = document.getElementById(canvasId);
         if (!canvas) throw new Error('Canvas not found');
 
@@ -119,66 +209,34 @@ class GameEngine {
         this.width = canvas.width;
         this.height = canvas.height;
 
+        // Inyección de dependencias
+        this.uiManager = uiManager;
+        this.inputHandler = new InputHandler(() => this.handlePlayerAction());
+
+        // Instanciación de entidades y sistemas externos (importados desde index.html)
         this.player = new Player();
         this.obstacles = [];
         this.particleSystem = new ParticleSystem();
         this.parallax = new ParallaxBackground(this.width, this.height);
 
-        this.uiScore = document.getElementById('score-value');
-        this.uiHighScore = document.getElementById('high-score-value');
-        this.uiGameOver = document.getElementById('game-over-screen');
-
         this.score = 0;
-        this.highScore = Number(localStorage.getItem('cyberRunnerHighScore')) || 0;
+        this.highScore = StorageManager.getHighScore();
         this.gameSpeed = CONFIG.INITIAL_SPEED;
         this.spawnTimer = 0;
         this.isGameOver = false;
 
-
-        if (this.uiHighScore) {
-            this.uiHighScore.innerText = this.highScore.toString().padStart(5, '0');
-        }
-
-        this.bindEvents();
+        this.uiManager.updateHighScore(this.highScore);
 
         this.loop = this.loop.bind(this);
         requestAnimationFrame(this.loop);
     }
 
-    bindEvents() {
-        const handleAction = (event) => {
-            if (event.type === 'keydown' && (event.code !== 'Space' && event.code !== 'ArrowUp')) {
-                return;
-            }
-            event.preventDefault();
-
-            if (this.isGameOver) {
-                this.restart();
-            } else {
-                this.player.jump();
-            }
-        };
-
-        window.addEventListener('keydown', handleAction);
-        window.addEventListener('touchstart', handleAction, { passive: false });
-        window.addEventListener('mousedown', handleAction);
-    }
-
-    checkCollision(player, obstacle) {
-        let testX = player.x;
-        let testY = player.y;
-
-        if (player.x < obstacle.x) testX = obstacle.x;
-        else if (player.x > obstacle.x + obstacle.width) testX = obstacle.x + obstacle.width;
-
-        if (player.y < obstacle.y) testY = obstacle.y;
-        else if (player.y > obstacle.y + obstacle.height) testY = obstacle.y + obstacle.height;
-
-        const distX = player.x - testX;
-        const distY = player.y - testY;
-        const distance = Math.sqrt((distX * distX) + (distY * distY));
-
-        return distance <= player.radius - 2;
+    handlePlayerAction() {
+        if (this.isGameOver) {
+            this.restart();
+        } else {
+            this.player.jump();
+        }
     }
 
     update() {
@@ -194,47 +252,51 @@ class GameEngine {
             this.particleSystem.emitTrail(this.player.x, this.player.y + this.player.radius, CONFIG.COLORS.PLAYER);
         }
 
+        this.handleObstacles();
+        this.particleSystem.update();
+
+        this.updateScore();
+    }
+
+    handleObstacles() {
         this.spawnTimer--;
         if (this.spawnTimer <= 0) {
-            this.obstacles.push(new Obstacle(this.width, 25, 45, 30, 65));
+            const minW = 25, maxW = 45, minH = 30, maxH = 65;
+            this.obstacles.push(new Obstacle(this.width, minW, maxW, minH, maxH));
             this.spawnTimer = Math.random() * (CONFIG.SPAWN_TIME_MAX - CONFIG.SPAWN_TIME_MIN) + CONFIG.SPAWN_TIME_MIN;
         }
 
         this.obstacles.forEach(obstacle => {
             obstacle.update(this.gameSpeed);
-            if (this.checkCollision(this.player, obstacle)) {
+            if (Physics.checkCollision(this.player, obstacle)) {
                 this.triggerGameOver();
             }
         });
 
         this.obstacles = this.obstacles.filter(obstacle => !obstacle.markedForDeletion);
-        this.particleSystem.update();
+    }
 
+    updateScore() {
         this.gameSpeed += CONFIG.SPEED_INCREMENT;
         this.score++;
 
-        const currentDisplayScore = Math.floor(this.score / 10);
-        if (this.score % 10 === 0 && this.uiScore) {
-            this.uiScore.innerText = currentDisplayScore.toString().padStart(5, '0');
+        if (this.score % 10 === 0) {
+            this.uiManager.updateScore(this.score);
         }
     }
 
     triggerGameOver() {
         this.isGameOver = true;
-
         const currentDisplayScore = Math.floor(this.score / 10);
+
         if (currentDisplayScore > this.highScore) {
             this.highScore = currentDisplayScore;
-            localStorage.setItem('cyberRunnerHighScore', this.highScore);
-            if (this.uiHighScore) {
-                this.uiHighScore.innerText = this.highScore.toString().padStart(5, '0');
-            }
+            StorageManager.saveHighScore('cyberRunnerHighScore', this.highScore);
+            this.uiManager.updateHighScore(this.highScore);
         }
 
         this.particleSystem.emitExplosion(this.player.x, this.player.y, CONFIG.COLORS.PLAYER, 30);
-        if (this.uiGameOver) {
-            this.uiGameOver.classList.add('visible');
-        }
+        this.uiManager.showGameOver();
     }
 
     draw() {
@@ -261,16 +323,26 @@ class GameEngine {
         this.isGameOver = false;
         this.spawnTimer = 0;
 
-        if (this.uiScore) this.uiScore.innerText = "00000";
-        if (this.uiGameOver) this.uiGameOver.classList.remove('visible');
+        this.uiManager.updateScore(0);
+        this.uiManager.hideGameOver();
         this.particleSystem.particles = [];
     }
 }
 
+/**
+ * Punto de entrada: Composición e Inyección de Control
+ */
 window.onload = () => {
     try {
-        new GameEngine('game-canvas');
+        const uiElements = {
+            score: document.getElementById('score-value'),
+            highScore: document.getElementById('high-score-value'),
+            gameOver: document.getElementById('game-over-screen')
+        };
+        
+        const uiManager = new UIManager(uiElements);
+        new GameEngine('game-canvas', uiManager);
     } catch (error) {
-        console.error("Initialization failed:", error);
+        console.error("Fallo en la inicialización:", error);
     }
 };
