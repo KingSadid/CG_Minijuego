@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-/* Clean Code: Centralizamos los colores temáticos en variables */
+/* Centralizamos los colores temáticos en variables */
 :root {
     --bg-color: #050510;
     --neon-blue: #00f3ff;
