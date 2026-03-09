@@ -209,11 +209,9 @@ class GameEngine {
         this.width = canvas.width;
         this.height = canvas.height;
 
-        // Inyección de dependencias
         this.uiManager = uiManager;
         this.inputHandler = new InputHandler(() => this.handlePlayerAction());
 
-        // Instanciación de entidades y sistemas externos (importados desde index.html)
         this.player = new Player();
         this.obstacles = [];
         this.particleSystem = new ParticleSystem();
