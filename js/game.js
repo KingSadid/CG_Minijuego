@@ -18,7 +18,7 @@ const CONFIG = {
 };
 
 /**
- * SRP: Gestión de almacenamiento local (Storage)
+ * Gestión de almacenamiento local (Storage)
  */
 class StorageManager {
     static getHighScore(key = 'cyberRunnerHighScore') {
@@ -31,7 +31,7 @@ class StorageManager {
 }
 
 /**
- * SRP: Manejo de la Interfaz de Usuario (DOM)
+ * Manejo de la Interfaz de Usuario (DOM)
  */
 class UIManager {
     constructor(uiElements) {
@@ -62,7 +62,7 @@ class UIManager {
 }
 
 /**
- * SRP: Manejo de entradas del usuario (Teclado, Touch, Mouse)
+ * Manejo de entradas del usuario (Teclado, Touch, Mouse)
  */
 class InputHandler {
     constructor(onActionCallback) {
@@ -86,7 +86,7 @@ class InputHandler {
 }
 
 /**
- * SRP: Utilidad de físicas y colisiones (Matemáticas puras)
+ * Utilidad de físicas y colisiones (Matemáticas puras)
  */
 class Physics {
     static checkCollision(circleEntity, rectEntity) {
